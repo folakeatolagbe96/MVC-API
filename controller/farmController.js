@@ -112,6 +112,39 @@ const getAllMaturedAnimal = async(req, res)=>{
   }
 }
 
+//GET ALL SOLD ANIMAL
+
+const getAllYetToBeSold = async(req, res)=>{
+  try {
+  
+    const getAllYetToBeSold = await farmModel.find({issold: false});
+
+   (getAllYetToBeSold.length === 0) 
+      res.status(200).json({
+        message:"All to be sold found successfully",
+        data: getAllYetToBeSold
+      })
+    
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //UPDATE
 const upDateSoldAnimal = async(req, res)=>{
   try {
@@ -149,5 +182,6 @@ module.exports = {
   getOne,
   deleteAnimal,
   getAllMaturedAnimal,
-  upDateSoldAnimal
+  upDateSoldAnimal,
+  getAllYetToBeSold
 }
