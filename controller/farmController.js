@@ -2,9 +2,9 @@ const farmModel = require('../Model/farmModel.js');
 
 const register = async(req, res)=>{
   try {
-    const {age, nameOfAnimal, breed, colour} = req.body;
+    const {age, nameOfAnimal, breed, colour, issold} = req.body;
 let matured = false
-    if (age >= 10) {
+    if (age >= 30) {
       matured = true
     }
     const animal = await farmModel.create({
@@ -12,7 +12,9 @@ let matured = false
       breed,
       age,
       colour,
+      issold,
       isMatured: matured
+  
     });
     res.status(201).json({
       message: 'Animal profile created successfully',
@@ -24,13 +26,15 @@ let matured = false
     });
   }
 }
+
+
 const getAll = async(req, res)=>{
   try {
-    const allAnimals = await farmModel. find();
+    const allAnimals = await farmModel.find();
     if (allAnimals.length=== 0) {
       res.status(200).json({
-        message: `list of all animal in the database: ${allAnimals}`,
-        data: animal
+        message:"list of all animal in the database",
+        data: allAnimals
       })
     }
   } catch (error) {
@@ -44,16 +48,84 @@ const getAll = async(req, res)=>{
 const getOne = async(req, res)=>{
   try {
     const { id} = req.params.id
-    const animal = await farmModel. findById(id);
+    const animals = await farmModel. findById(id);
     if (!animals) {
       res.status(404).json({
         message: `Animal with ID: ${id} not found`,
-        data: animal
+        data: animals
       })
     }else{
       res.status(200).json({
         message: `animal found`,
-        data: animal
+        data: animals
+      })
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+}
+
+
+//DELETE 
+
+const deleteAnimal = async(req, res)=>{
+  try {
+    const discardId = req.params.id
+    const animals = await farmModel.findByIdAndDelete(discardId);
+    if (!animals) {
+      res.status(404).json({
+        message: `Animal with ID: ${discardId} not found`,
+        data: animals
+      })
+    }res.status(200).json({
+        message: `Animal with the ID ${discardId} deleted successfully`,
+        data: animals
+      })
+    
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+}
+
+
+
+//GET ALL MATURED ANIMAL
+
+const getAllMaturedAnimal = async(req, res)=>{
+  try {
+  
+    const getAllMatured = await farmModel.find({isMatured: true});
+   (getAllMatured.length === 0) 
+      res.status(200).json({
+        message: getAllMatured,
+        data: getAllMaturedAnimal
+      })
+    
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+}
+
+//UPDATE
+const upDateSoldAnimal = async(req, res)=>{
+  try {
+    const  soldId = req.params.id
+    const animals = await farmModel.findByIdAndUpdate(soldId,req.body,{new: true});
+    if (!animals) {
+      res.status(404).json({
+        message: `Animal with ID: ${soldId} update successfully`,
+        data: animals
+      })
+    }else{
+      res.status(200).json({
+        message: `animal found`,
+        data: animals
       })
     }
   } catch (error) {
@@ -71,9 +143,11 @@ const getOne = async(req, res)=>{
 
 
 
-
 module.exports = {
   register,
   getAll,
-  getOne
+  getOne,
+  deleteAnimal,
+  getAllMaturedAnimal,
+  upDateSoldAnimal
 }
